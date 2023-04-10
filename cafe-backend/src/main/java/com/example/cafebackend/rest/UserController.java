@@ -2,7 +2,7 @@ package com.example.cafebackend.rest;
 
 import com.example.cafebackend.constants.CafeConstants;
 import com.example.cafebackend.model.binding.user.*;
-import com.example.cafebackend.service.UserService;
+import com.example.cafebackend.service.UserServiceImpl;
 import com.example.cafebackend.utils.CafeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,7 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userService;
 
     @PostMapping(path = "/signup")
     public ResponseEntity<String> signUp(@RequestBody @Valid RegistrationRequest request) {

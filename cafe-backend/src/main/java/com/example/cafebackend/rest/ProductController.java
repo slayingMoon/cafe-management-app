@@ -4,7 +4,7 @@ import com.example.cafebackend.constants.CafeConstants;
 import com.example.cafebackend.model.binding.product.AddProductModel;
 import com.example.cafebackend.model.binding.product.GetProductModel;
 import com.example.cafebackend.model.binding.product.UpdateProductStatusModel;
-import com.example.cafebackend.service.ProductService;
+import com.example.cafebackend.service.ProductServiceImpl;
 import com.example.cafebackend.utils.CafeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,7 @@ import java.util.List;
 public class ProductController {
 
     @Autowired
-    ProductService productService;
+    ProductServiceImpl productService;
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")

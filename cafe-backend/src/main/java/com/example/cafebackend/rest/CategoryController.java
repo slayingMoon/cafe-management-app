@@ -3,8 +3,7 @@ package com.example.cafebackend.rest;
 import com.example.cafebackend.constants.CafeConstants;
 import com.example.cafebackend.model.binding.category.AddCategoryModel;
 import com.example.cafebackend.model.binding.category.UpdateCategoryModel;
-import com.example.cafebackend.model.entity.Category;
-import com.example.cafebackend.service.CategoryService;
+import com.example.cafebackend.service.CategoryServiceImpl;
 import com.example.cafebackend.utils.CafeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,15 +11,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @RestController
 @RequestMapping("/category")
 public class CategoryController {
 
     @Autowired
-    private CategoryService categoryService;
+    private CategoryServiceImpl categoryService;
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")

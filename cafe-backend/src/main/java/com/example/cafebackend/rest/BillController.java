@@ -2,7 +2,7 @@ package com.example.cafebackend.rest;
 
 import com.example.cafebackend.constants.CafeConstants;
 import com.example.cafebackend.model.binding.bill.BillReportModel;
-import com.example.cafebackend.service.BillService;
+import com.example.cafebackend.service.BillServiceImpl;
 import com.example.cafebackend.utils.CafeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class BillController {
 
     @Autowired
-    private BillService billService;
+    private BillServiceImpl billService;
 
     @PostMapping("/generateReport")
     public ResponseEntity<String> generateReport(@RequestBody BillReportModel billReportModel) {
