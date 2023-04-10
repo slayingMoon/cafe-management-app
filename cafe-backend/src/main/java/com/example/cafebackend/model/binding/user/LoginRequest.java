@@ -1,7 +1,9 @@
 package com.example.cafebackend.model.binding.user;
 
-import com.sun.istack.NotNull;
+
 import lombok.Data;
+
+import javax.validation.constraints.NotNull;
 
 @Data
 public class LoginRequest {
