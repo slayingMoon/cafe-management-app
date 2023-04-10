@@ -187,6 +187,24 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    private void sendMailToAllAdmins(List<User> inactiveUsers, List<String> adminMails) {
+        StringBuilder messageBuilder = new StringBuilder();
+        messageBuilder
+                .append("Following Users are not activated:")
+                .append("\n");
+
+        inactiveUsers.forEach(u ->
+                messageBuilder
+                        .append("-").append(u.getEmail())
+                        .append("\n")
+        );
+
+        emailUtils
+                .sendSimpleMessage("INACTIVE USERS REPORT",
+                        messageBuilder.toString(),
+                        adminMails);
+    }
+
     private List<String> getAdminMails() {
         log.info("Fetching admin mails");
 
@@ -255,5 +273,15 @@ public class UserServiceImpl implements UserService {
         }
 
         return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public List<User> findInactiveUsers() {
+        return userRepository.findAllByIsVerified("false");
+    }
+
+    @Override
+    public void notifyAdminsAboutInactiveUsers(List<User> inactiveUsers) {
+        sendMailToAllAdmins(inactiveUsers, getAdminMails());
     }
 }

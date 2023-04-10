@@ -34,6 +34,19 @@ public class EmailUtils {
         emailSender.send(message);
     }
 
+    public void sendSimpleMessage(String subject, String text, List<String> list) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("cafemanagement@email.com");
+        message.setSubject(subject);
+        message.setText(text);
+
+        if (list != null && !list.isEmpty()) {
+            message.setTo(getCcArray(list));
+        }
+
+        emailSender.send(message);
+    }
+
     private String[] getCcArray(List<String> ccList) {
         String[] cc = new String[ccList.size()];
 
