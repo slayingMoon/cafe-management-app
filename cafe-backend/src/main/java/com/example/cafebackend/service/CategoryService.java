@@ -5,6 +5,7 @@ import com.example.cafebackend.model.binding.category.AddCategoryModel;
 import com.example.cafebackend.model.binding.category.UpdateCategoryModel;
 import com.example.cafebackend.model.entity.Category;
 import com.example.cafebackend.model.entity.Product;
+import com.example.cafebackend.model.mapper.CategoryMapper;
 import com.example.cafebackend.repository.CategoryRepository;
 import com.example.cafebackend.utils.CafeUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,9 @@ public class CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private CategoryMapper categoryMapper;
+
     @Transactional
     public ResponseEntity<String> addNewCategory(AddCategoryModel addCategoryModel) {
 
@@ -41,7 +45,7 @@ public class CategoryService {
                     .orElse(null);
 
             if (Objects.isNull(category)) {
-                category = constructCategory(addCategoryModel.getName());
+                category = constructCategory(addCategoryModel);
                 em.persist(category);
                 return CafeUtils.getResponseEntity("Category added successfully.", HttpStatus.OK);
             }
@@ -54,15 +58,15 @@ public class CategoryService {
         return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    private Category constructCategory(String name) {
-        return new Category().setName(name);
+    private Category constructCategory(AddCategoryModel addCategoryDTO) {
+        return categoryMapper
+                .categoryDTOtoCategoryEntity(addCategoryDTO);
     }
 
     public List<Category> getAllCategories() {
         log.info("Fetching categories..");
 
-        return em.createQuery("select c from Category c", Category.class)
-                .getResultList();
+        return categoryRepository.findAll();
     }
 
     @Transactional

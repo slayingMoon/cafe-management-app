@@ -101,6 +101,19 @@
 			<artifactId>spring-boot-starter-mail</artifactId>
 			<version>2.5.6</version>
 		</dependency>
+
+		<!--- model mapping -->
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+			<version>1.5.3.Final</version>
+		</dependency>
+		<!-- processor needed for creating beans -->
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct-processor</artifactId>
+			<version>1.4.2.Final</version>
+		</dependency>
 	</dependencies>
 
 	<build>

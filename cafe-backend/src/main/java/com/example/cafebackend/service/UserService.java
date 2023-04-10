@@ -7,6 +7,7 @@ import com.example.cafebackend.jwt.JwtUtil;
 import com.example.cafebackend.jwt.UserPrincipal;
 import com.example.cafebackend.model.binding.user.*;
 import com.example.cafebackend.model.entity.User;
+import com.example.cafebackend.model.mapper.UserMapper;
 import com.example.cafebackend.repository.UserRepository;
 import com.example.cafebackend.utils.CafeUtils;
 import com.example.cafebackend.utils.EmailUtils;
@@ -60,6 +61,9 @@ public class UserService {
     @Autowired
     private EmailUtils emailUtils;
 
+    @Autowired
+    private UserMapper userMapper;
+
     public ResponseEntity<String> signUp(RegistrationRequest request) {
         log.info("Inside signup: {}", request);
 
@@ -85,10 +89,7 @@ public class UserService {
     }
 
     private User constructUser(RegistrationRequest request) {
-        User user = new User();
-        user.setName(request.getName());
-        user.setContactNumber(request.getContactNumber());
-        user.setEmail(request.getEmail());
+        User user = userMapper.userDTOtoUserEntity(request);
         user.setPassword(encoder.encode(request.getPassword()));
         user.setIsVerified("false");
         user.setRole("ROLE_USER");
@@ -138,13 +139,9 @@ public class UserService {
     }
 
     private UserBindingModel mapUser(User user) {
-        return new UserBindingModel(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getContactNumber(),
-                user.getIsVerified()
-        );
+        UserBindingModel userDTO = userMapper.userEntityToDTO(user);
+        userDTO.setStatus(user.getIsVerified());
+        return userDTO;
     }
 
     @Transactional

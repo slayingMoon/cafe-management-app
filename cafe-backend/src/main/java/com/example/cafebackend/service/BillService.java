@@ -5,6 +5,7 @@ import com.example.cafebackend.jwt.JwtFilter;
 import com.example.cafebackend.model.binding.bill.BillReportModel;
 import com.example.cafebackend.model.binding.product.ProductDetailsModel;
 import com.example.cafebackend.model.entity.Bill;
+import com.example.cafebackend.model.mapper.BillMapper;
 import com.example.cafebackend.repository.BillRepository;
 import com.example.cafebackend.utils.CafeUtils;
 import com.itextpdf.text.*;
@@ -42,6 +43,9 @@ public class BillService {
 
     @PersistenceContext
     private EntityManager em;
+
+    @Autowired
+    private BillMapper billMapper;
 
     @Transactional
     public ResponseEntity<String> generateReport(BillReportModel billReportModel) {
@@ -180,14 +184,9 @@ public class BillService {
     }
 
     private void generateBill(BillReportModel billReportModel, String fileName) {
-        Bill newBill = new Bill();
+        Bill newBill = billMapper.billDTOtoBillEntity(billReportModel);
         newBill.setUuid(fileName);
-        newBill.setName(billReportModel.getName());
-        newBill.setEmail(billReportModel.getEmail());
-        newBill.setContactNumber(billReportModel.getContactNumber());
-        newBill.setPaymentMethod(billReportModel.getPaymentMethod());
         newBill.setTotal(new BigDecimal(billReportModel.getTotalAmount()));
-        newBill.setProductDetails(billReportModel.getProductDetails());
         newBill.setCreatedBy(jwtFilter.getCurrentUser());
         billRepository.save(newBill);
     }

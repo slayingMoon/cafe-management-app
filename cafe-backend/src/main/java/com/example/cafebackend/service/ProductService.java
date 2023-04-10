@@ -7,6 +7,7 @@ import com.example.cafebackend.model.binding.product.GetProductModel;
 import com.example.cafebackend.model.binding.product.UpdateProductStatusModel;
 import com.example.cafebackend.model.entity.Category;
 import com.example.cafebackend.model.entity.Product;
+import com.example.cafebackend.model.mapper.ProductMapper;
 import com.example.cafebackend.repository.ProductRepository;
 import com.example.cafebackend.utils.CafeUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,9 @@ public class ProductService {
     @PersistenceContext
     EntityManager em;
 
+    @Autowired
+    private ProductMapper productMapper;
+
     @Transactional
     public ResponseEntity<String> addNewProduct(AddProductModel addProductModel) {
         try {
@@ -60,10 +64,7 @@ public class ProductService {
     }
 
     private Product constructProduct(AddProductModel addProductModel) {
-        Product newProduct = new Product();
-
-        newProduct.setName(addProductModel.getName());
-        newProduct.setDescription(addProductModel.getDescription());
+        Product newProduct = productMapper.productDTOtoProductEntity(addProductModel);
         newProduct.setPrice(new BigDecimal(addProductModel.getPrice()));
         newProduct.setStatus("true");
 
@@ -86,17 +87,12 @@ public class ProductService {
     }
 
     private GetProductModel mapToProductModel(Product product) {
-        return new GetProductModel(
-                product.getId(),
-                product.getName(),
-                product.getDescription(),
-                product.getPrice(),
-                product.getStatus(),
-                //    it is important that GetProductModel contains both
-                //    categoryId and categoryName, so that get and edit can display category name
-                product.getCategory().getId(),
-                product.getCategory().getName()
-        );
+        GetProductModel getProductDTO = productMapper.productEntityToProductDTO(product);
+        //    it is important that GetProductModel contains both
+        //    categoryId and categoryName, so that get and edit can display category name
+        getProductDTO.setCategoryId(product.getCategory().getId());
+        getProductDTO.setCategoryName(product.getCategory().getName());
+        return getProductDTO;
     }
 
     @Transactional
