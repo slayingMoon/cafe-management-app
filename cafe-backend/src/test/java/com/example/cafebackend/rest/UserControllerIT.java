@@ -1,20 +1,21 @@
 package com.example.cafebackend.rest;
 
+import com.example.cafebackend.jwt.JwtFilter;
 import com.example.cafebackend.jwt.JwtUtil;
-import com.example.cafebackend.model.binding.user.LoginRequest;
-import com.example.cafebackend.model.binding.user.RegistrationRequest;
-import com.example.cafebackend.model.binding.user.UserUpdateModel;
+import com.example.cafebackend.model.binding.user.*;
 import com.example.cafebackend.model.entity.User;
 import com.example.cafebackend.repository.UserRepository;
 import com.example.cafebackend.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -55,6 +56,9 @@ public class UserControllerIT {
 
     @Autowired
     private JwtUtil jwtUtils;
+
+    @Autowired
+    private JwtFilter jwtFilter;
 
     @BeforeEach
     void setUp() {
@@ -157,5 +161,60 @@ public class UserControllerIT {
                 .andExpect(jsonPath("$[1].name", equalTo(user2.getName())))
                 .andExpect(jsonPath("$[1].email", equalTo(user2.getEmail())));
     }
-    
+
+    @Test
+    @WithMockUser(roles = "USER")
+    void testCheckToken() throws Exception {
+        mockMvc.perform(get(baseUrl + port + "/user/checkToken"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("{\"message\":\"true\"}"));
+    }
+
+    @Test
+    void testCheckTokenFailsWhenNoUser() throws Exception {
+        mockMvc.perform(get(baseUrl + port + "/user/checkToken"))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    public void when_getOneUser_returnsFirst() throws Exception {
+        mockMvc.perform(get("/user/"));
+    }
+
+//    @Test
+//    @WithMockUser(username = "admin@admin.com", password = "admin", roles = "ADMIN")
+//    void testUpdateUser() throws Exception {
+//        User admin = new User();
+//        admin.setName("admin");
+//        admin.setPassword(new BCryptPasswordEncoder().encode("admin"));
+//        admin.setEmail("admin@example.com");
+//        admin.setRole("ROLE_ADMIN");
+//        admin.setContactNumber("0888222111");
+//        admin.setIsVerified("true");
+//        userRepository.save(admin);
+//
+//        User user1 = new User();
+//        user1.setName("user1");
+//        user1.setPassword(new BCryptPasswordEncoder().encode("password1"));
+//        user1.setEmail("user1@example.com");
+//        user1.setRole("ROLE_USER");
+//        user1.setContactNumber("0888222333");
+//        user1.setIsVerified("false");
+//        userRepository.save(user1);
+//
+//        Optional<User> found = userRepository.findByEmail("user1@example.com");
+//
+//        UserUpdateModel userUpdateModel = new UserUpdateModel();
+//        userUpdateModel.setId(found.get().getId());
+//        userUpdateModel.setStatus("true");
+//
+//        mockMvc.perform(patch(baseUrl + port + "/user/update")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content(objectMapper.writeValueAsString(userUpdateModel)))
+//                .andExpect(status().isOk())
+//                .andExpect(content().string("User " + user1.getEmail() + " updated successfully"));
+//
+//
+//    }
+
 }
