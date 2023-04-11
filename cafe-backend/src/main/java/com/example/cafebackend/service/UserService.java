@@ -18,4 +18,8 @@ public interface UserService {
     List<User> findInactiveUsers();
 
     void notifyAdminsAboutInactiveUsers(List<User> inactiveUsers);
+
+    String updateUsername(UsernameUpdateModel usernameUpdateModel);
+
+    ResponseEntity<?> getUserByEmail(String email);
 }

@@ -39,6 +39,16 @@ export class UserService {
     })
   }
 
+  changeUsername(data: any) {
+    return this.httpClient.patch(this.url + "/user/changeUsername", data, {
+      headers: new HttpHeaders().set('Content-Type', "application/json")
+    });
+  }
+
+  getUser() {
+    return this.httpClient.get(this.url + "/user/getUser");
+  }
+
   getUsers() {
     return this.httpClient.get(this.url + "/user/all");
   }

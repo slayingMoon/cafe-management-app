@@ -284,4 +284,42 @@ public class UserServiceImpl implements UserService {
     public void notifyAdminsAboutInactiveUsers(List<User> inactiveUsers) {
         sendMailToAllAdmins(inactiveUsers, getAdminMails());
     }
+
+    @Override
+    public String updateUsername(UsernameUpdateModel usernameUpdateModel) {
+        User userToUpdate = userRepository.findByEmail(usernameUpdateModel.getEmail()).orElse(null);
+
+        if (!Objects.isNull(userToUpdate)) {
+
+            log.info("updating user username");
+
+            userToUpdate
+                    .setName(usernameUpdateModel.getUsername());
+
+            userRepository.save(userToUpdate);
+            return String.format("User %s updated successfully", userToUpdate.getEmail());
+        }else {
+            throw new UsernameNotFoundException("User with email " + usernameUpdateModel.getEmail() + " not found");
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> getUserByEmail(String email) {
+        log.info("Fetching user by email...");
+
+        try {
+            User user = userRepository.findByEmail(email).orElse(null);
+            if (!Objects.isNull(user)) {
+                log.info("User with email {} found", email);
+                return ResponseEntity.ok(mapUser(user));
+            }
+
+            log.info("User not found");
+            return CafeUtils.getResponseEntity("User not found", HttpStatus.BAD_REQUEST);
+        }catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
