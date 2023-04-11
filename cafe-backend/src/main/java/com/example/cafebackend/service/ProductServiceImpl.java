@@ -21,6 +21,7 @@ import javax.persistence.PersistenceContext;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -39,19 +40,14 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductMapper productMapper;
 
-    @Transactional
     @Override
     public ResponseEntity<String> addNewProduct(AddProductModel addProductModel) {
         try {
-            Product product = em.createQuery("select p from Product p", Product.class)
-                    .getResultStream()
-                    .filter(c -> c.getName().equals(addProductModel.getName()))
-                    .findAny()
-                    .orElse(null);
+            Product product = productRepository.findProductByName(addProductModel.getName()).orElse(null);
 
             if (Objects.isNull(product)) {
                 product = constructProduct(addProductModel);
-                em.persist(product);
+                productRepository.save(product);
                 return CafeUtils.getResponseEntity("Product added successfully.", HttpStatus.OK);
             }
 
@@ -81,8 +77,8 @@ public class ProductServiceImpl implements ProductService {
     public List<GetProductModel> getAllProducts() {
         log.info("Fetching products..");
 
-        return em.createQuery("select p from Product p", Product.class)
-                .getResultStream()
+        return productRepository.findAll()
+                .stream()
                 .map(this::mapToProductModel)
                 .collect(Collectors.toList());
     }
@@ -96,14 +92,13 @@ public class ProductServiceImpl implements ProductService {
         return getProductDTO;
     }
 
-    @Transactional
     @Override
     public ResponseEntity<String> updateProduct(AddProductModel updateProductModel) {
         log.info("Updating product...");
 
         try {
 
-            Product product = em.find(Product.class, updateProductModel.getId());
+            Product product = productRepository.findById(updateProductModel.getId()).orElse(null);
 
             boolean isChanged = false;
 
@@ -129,6 +124,7 @@ public class ProductServiceImpl implements ProductService {
                 }
 
                 if (isChanged) {
+                    productRepository.save(product);
                     log.info("Product Updated Successfully.");
                     return CafeUtils.getResponseEntity("Product Updated Successfully.", HttpStatus.OK);
                 }
@@ -152,10 +148,10 @@ public class ProductServiceImpl implements ProductService {
         log.info("Deleting product...");
 
         try {
-            Product product = em.find(Product.class, id);
+            Product product = productRepository.findById(id).orElse(null);
 
             if (Objects.nonNull(product)) {
-                em.remove(product);
+                productRepository.delete(product);
                 log.info("Product Deleted Successfully");
                 return CafeUtils.getResponseEntity("Product Deleted Successfully", HttpStatus.OK);
             }
