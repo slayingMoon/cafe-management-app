@@ -17,6 +17,7 @@ export class UserEditComponent implements OnInit {
   dialogAction: any = 'Add';
   action: any = 'Add';
   responseMessage: any;
+  roles: any = [];
 
   constructor(@Inject(MAT_DIALOG_DATA) public dialogData: any,
               private formBuilder: FormBuilder,
@@ -30,6 +31,7 @@ export class UserEditComponent implements OnInit {
       name: [null, [Validators.required, Validators.pattern(GlobalConstants.nameRegex)]],
       email: [null, Validators.required],
       contactNumber: [null, Validators.required],
+      roleId: [null, Validators.required]
     });
 
     if (this.dialogData.action === 'Edit') {
@@ -39,6 +41,14 @@ export class UserEditComponent implements OnInit {
       this.userForm.patchValue(this.dialogData.data);
     }
 
+    this.getRoles();
+  }
+
+  getRoles () {
+    this.roles = [
+      {id: 0, name: 'Admin'},
+      {id: 1, name: 'User'}
+    ];
   }
 
   handleSubmit() {
@@ -54,7 +64,8 @@ export class UserEditComponent implements OnInit {
       id: this.dialogData.data.id,
       name: formData.name,
       email: formData.email,
-      contactNumber: formData.contactNumber
+      contactNumber: formData.contactNumber,
+      roleId: formData.roleId
     };
     //passing DTO info to server API
     this.userService.edit(data).subscribe((response: any) => {

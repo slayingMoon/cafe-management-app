@@ -12,4 +12,5 @@ public class UserEditModel {
     private String name;
     private String email;
     private String contactNumber;
+    private Long roleId;
 }
