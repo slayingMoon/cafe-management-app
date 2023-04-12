@@ -39,7 +39,6 @@ by the cafe's employees.</p>
 </p>
 
 <hr/>
-<hr/>
 
 <h2>Logged as Admin</h2>
 
