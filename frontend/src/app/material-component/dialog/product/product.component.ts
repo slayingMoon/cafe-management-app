@@ -112,7 +112,7 @@ export class ProductComponent implements OnInit {
       this.responseMessage = response.message;
       this.snackbarService.openSnackBar(this.responseMessage, "success"); //opens up pop-up message
     }, (error: any) => {
-      
+
       if(error.error?.message) {
         this.responseMessage = error.error?.message;
       }else {
