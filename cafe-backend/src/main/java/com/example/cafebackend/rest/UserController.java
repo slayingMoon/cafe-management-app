@@ -80,6 +80,20 @@ public class UserController {
 
     }
 
+    @PatchMapping("/edit")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<String> editUser(@RequestBody UserEditModel userEditDTO) {
+
+        try {
+            return userService.edit(userEditDTO);
+        }catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+
+    }
+
     @PatchMapping("/changeUsername")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<String> updateUsername(@RequestBody UsernameUpdateModel usernameUpdateModel) {

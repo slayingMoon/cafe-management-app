@@ -22,4 +22,6 @@ public interface UserService {
     String updateUsername(UsernameUpdateModel usernameUpdateModel);
 
     ResponseEntity<?> getUserByEmail(String email);
+
+    ResponseEntity<String> edit(UserEditModel userEditDTO);
 }

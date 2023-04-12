@@ -322,4 +322,47 @@ public class UserServiceImpl implements UserService {
 
         return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @Override
+    public ResponseEntity<String> edit(UserEditModel userEditModel) {
+        log.info("Updating user...");
+
+        try {
+            User user = userRepository.findById(userEditModel.getId()).orElse(null);
+
+            boolean isChanged = false;
+
+            if(!Objects.isNull(user)) {
+                if(!user.getName().equals(userEditModel.getName())) {
+                    user.setName(userEditModel.getName());
+                    isChanged=true;
+                }
+
+                if (!user.getEmail().equals(userEditModel.getEmail())) {
+                    user.setEmail(userEditModel.getEmail());
+                    isChanged=true;
+                }
+
+                if (!user.getContactNumber().equals(userEditModel.getContactNumber())) {
+                    user.setContactNumber(userEditModel.getContactNumber());
+                    isChanged=true;
+                }
+
+                if(isChanged) {
+                    userRepository.save(user);
+                    log.info("User updated successfully.");
+                    return CafeUtils.getResponseEntity("User updated successfully", HttpStatus.OK);
+                }
+
+                log.info("User has no changes to commit");
+                return CafeUtils.getResponseEntity("User has no changes to commit", HttpStatus.OK);
+            }
+
+            log.info("User not found.");
+            return CafeUtils.getResponseEntity("User not found", HttpStatus.BAD_REQUEST);
+        }catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

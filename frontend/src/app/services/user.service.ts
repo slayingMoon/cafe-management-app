@@ -58,4 +58,10 @@ export class UserService {
       headers: new HttpHeaders().set('Content-Type', "application/json")
     })
   }
+
+  edit(data: any) {
+    return this.httpClient.patch(this.url + "/user/edit", data, {
+      headers: new HttpHeaders().set('Content-Type', "application/json")
+    });
+  }
 }

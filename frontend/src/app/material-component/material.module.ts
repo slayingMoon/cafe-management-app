@@ -20,6 +20,7 @@ import { ManageOrderComponent } from './manage-order/manage-order.component';
 import { ViewBillComponent } from './view-bill/view-bill.component';
 import { ManageUserComponent } from './manage-user/manage-user.component';
 import { ChangeUsernameComponent } from './dialog/change-username/change-username.component';
+import { UserEditComponent } from './dialog/user-edit/user-edit.component';
 
 @NgModule({
   imports: [
@@ -44,7 +45,8 @@ import { ChangeUsernameComponent } from './dialog/change-username/change-usernam
     ManageOrderComponent,
     ViewBillComponent,
     ManageUserComponent,
-    ChangeUsernameComponent    
+    ChangeUsernameComponent,
+    UserEditComponent    
   ]
 })
 export class MaterialComponentsModule {}

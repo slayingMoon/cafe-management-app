@@ -4,6 +4,9 @@ import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { SnackbarService } from 'src/app/services/snackbar.service';
 import { UserService } from 'src/app/services/user.service';
 import { GlobalConstants } from 'src/app/shared/global-constants';
+import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
+import {Router} from "@angular/router";
+import {UserEditComponent} from "../dialog/user-edit/user-edit.component";
 
 @Component({
   selector: 'app-manage-user',
@@ -17,7 +20,9 @@ export class ManageUserComponent implements OnInit {
 
   constructor(private ngxService: NgxUiLoaderService,
     private userService: UserService,
-    private snackbarService: SnackbarService) { }
+    private snackbarService: SnackbarService,
+    private dialog: MatDialog,
+    private router: Router) { }
 
   ngOnInit(): void {
     this.ngxService.start();
@@ -69,6 +74,25 @@ export class ManageUserComponent implements OnInit {
 
       this.snackbarService.openSnackBar(this.responseMessage, GlobalConstants.error);
     })
+  }
+
+  handleEditAction(values: any) {
+    const dialogConfig = new MatDialogConfig(); //create new Dialog for the add product operation
+    dialogConfig.data = {
+      action: 'Edit',
+      data: values
+    };
+    dialogConfig.width = '850px';
+
+    //tell the dialog to refer to ProductComponent, this will allow the UI to open the product component html template
+    const dialogRef = this.dialog.open(UserEditComponent, dialogConfig);
+    this.router.events.subscribe(() => {
+      dialogRef.close();
+    });
+
+    const sub = dialogRef.componentInstance.onUserEdit.subscribe((response) => {
+      this.tableData();
+    });
   }
 
 }
