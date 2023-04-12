@@ -1,5 +1,5 @@
-<h1 align="center">Cafe Management System</h1>
-<p align="center">Cafe Management System is an app for creating and processing customer orders and managing employees. It's purpose is to be used internally
+<h1>Cafe Management System</h1>
+<p>Cafe Management System is an app for creating and processing customer orders and managing employees. It's purpose is to be used internally
 by the cafe's employees.</p>
 
 <h2>Built using:</h2>
