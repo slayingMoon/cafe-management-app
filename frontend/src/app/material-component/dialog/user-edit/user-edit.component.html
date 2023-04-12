@@ -28,7 +28,18 @@
             <span *ngIf="userForm.controls.email.errors.required">This field is mandatory.</span>
           </mat-error>
         </mat-form-field>
-        <!-- category (category and price will be displayed in the same line)-->
+        <!-- roles (email and role will be displayed in the same line)-->
+        <mat-form-field appearance="fill" fxFlex>
+          <mat-label>Role</mat-label>
+          <mat-select formControlName="roleId">
+            <!-- it is important that GetProductModel contains both categoryId and categoryName, so that get and edit can display category name -->
+            <mat-option *ngFor="let role of roles" [value]="role.id">{{role.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div fxLayout="row wrap">
         <mat-form-field appearance="fill" fxFlex>
           <mat-label>Contact Number</mat-label>
           <input matInput formControlName="contactNumber" required>

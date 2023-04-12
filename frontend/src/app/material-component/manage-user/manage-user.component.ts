@@ -14,7 +14,7 @@ import {UserEditComponent} from "../dialog/user-edit/user-edit.component";
   styleUrls: ['./manage-user.component.scss']
 })
 export class ManageUserComponent implements OnInit {
-  displayedColumns: string[] = ['name', 'email', 'contactNumber', 'status'];
+  displayedColumns: string[] = ['name', 'email', 'contactNumber', 'userRole', 'status'];
   dataSource: any;
   responseMessage: any;
 

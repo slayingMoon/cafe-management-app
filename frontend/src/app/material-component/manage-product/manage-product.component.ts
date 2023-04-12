@@ -96,7 +96,7 @@ export class ManageProductComponent implements OnInit {
     dialogConfig.data = {
       message: 'delete product ' + values.name
     };
-    
+
     const dialogRef = this.dialog.open(ConfirmationComponent, dialogConfig);
     const sub = dialogRef.componentInstance.onEmitStatusChange.subscribe((response) => {
       this.ngxService.start();

@@ -29,7 +29,7 @@ export class SignupComponent implements OnInit {
       name:[null,[Validators.required, Validators.pattern(GlobalConstants.nameRegex)]],
       email:[null,[Validators.required, Validators.pattern(GlobalConstants.emailRegex)]],
       contactNumber:[null,[Validators.required, Validators.pattern(GlobalConstants.contactNumberRegex)]],
-      password:[null,[Validators.required]]
+      password:[null,[Validators.required, Validators.pattern(GlobalConstants.passwordRegex)]]
     })
   }
 

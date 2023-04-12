@@ -134,9 +134,8 @@ public class UserServiceImpl implements UserService {
     public List<UserBindingModel> getAllUsers() {
         log.info("Fetching all users");
 
-        return em.createQuery("select u from User u where u.role=:role", User.class)
-                .setParameter("role", "ROLE_USER")
-                .getResultStream()
+        return userRepository.findAll()
+                .stream()
                 .map(this::mapUser)
                 .collect(Collectors.toList());
     }
@@ -144,6 +143,10 @@ public class UserServiceImpl implements UserService {
     private UserBindingModel mapUser(User user) {
         UserBindingModel userDTO = userMapper.userEntityToDTO(user);
         userDTO.setStatus(user.getIsVerified());
+        String role = user.getRole().equals("ROLE_ADMIN") ? "Admin" : "User";
+        Long roleId = user.getRole().equals("ROLE_ADMIN") ? 0L : 1L;
+        userDTO.setUserRole(role);
+        userDTO.setRoleId(roleId);
         return userDTO;
     }
 
@@ -345,6 +348,12 @@ public class UserServiceImpl implements UserService {
 
                 if (!user.getContactNumber().equals(userEditModel.getContactNumber())) {
                     user.setContactNumber(userEditModel.getContactNumber());
+                    isChanged=true;
+                }
+
+                String role = userEditModel.getRoleId() == 1L ? "ROLE_USER" : "ROLE_ADMIN";
+                if(!user.getRole().equals(role)) {
+                    user.setRole(role);;
                     isChanged=true;
                 }
 
