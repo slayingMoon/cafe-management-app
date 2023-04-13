@@ -199,8 +199,9 @@ public class ProductServiceImpl implements ProductService {
     public ResponseEntity<?> getProductsByCategory(Long categoryId) {
         log.info("Fetching products by category...");
 
-        List<GetProductModel> products = em.createQuery("select p from Product p where p.category.id=:categoryId", Product.class)
+        List<GetProductModel> products = em.createQuery("select p from Product p where p.category.id=:categoryId and p.status=:status", Product.class)
                 .setParameter("categoryId", categoryId)
+                .setParameter("status", "true")
                 .getResultStream()
                 .map(this::mapToProductModel)
                 .collect(Collectors.toList());
