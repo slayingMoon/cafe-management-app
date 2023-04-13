@@ -6,6 +6,7 @@ export class GlobalConstants {
 
     //not sure if needed
     public static productExistError: string = "Product already exists.";
+    public static productAddedError: string = "Product already added.";
 
     public static productAdded: string = "Product Added Successfully";
 
