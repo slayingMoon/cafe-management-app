@@ -33,7 +33,7 @@
           <mat-label>Role</mat-label>
           <mat-select formControlName="roleId">
             <!-- it is important that GetProductModel contains both categoryId and categoryName, so that get and edit can display category name -->
-            <mat-option *ngFor="let role of roles" [value]="role.id">{{role.name}}
+            <mat-option *ngFor="let role of roles" [value]="role.id">{{role.name === 'ROLE_ADMIN' ? 'Admin' : 'User'}}
             </mat-option>
           </mat-select>
         </mat-form-field>

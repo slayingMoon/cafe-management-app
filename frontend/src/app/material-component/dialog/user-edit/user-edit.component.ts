@@ -5,6 +5,7 @@ import {CategoryService} from "../../../services/category.service";
 import {SnackbarService} from "../../../services/snackbar.service";
 import {GlobalConstants} from "../../../shared/global-constants";
 import {UserService} from "../../../services/user.service";
+import {RoleService} from "../../../services/role.service";
 
 @Component({
   selector: 'app-user-edit',
@@ -24,7 +25,8 @@ export class UserEditComponent implements OnInit {
               private userService: UserService,
               private dialogRef: MatDialogRef<UserEditComponent>,
               private categoryService: CategoryService,
-              private snackbarService: SnackbarService) { }
+              private snackbarService: SnackbarService,
+              private roleService: RoleService) { }
 
   ngOnInit(): void {
     this.userForm = this.formBuilder.group({
@@ -45,10 +47,18 @@ export class UserEditComponent implements OnInit {
   }
 
   getRoles () {
-    this.roles = [
-      {id: 0, name: 'Admin'},
-      {id: 1, name: 'User'}
-    ];
+    this.roleService.getRoles().subscribe((response: any) => {
+      this.roles = response;
+    }, (error: any)=> {
+
+      if(error.error?.message) {
+        this.responseMessage = error.error?.message;
+      }else {
+        this.responseMessage = GlobalConstants.genericError;
+      }
+
+      this.snackbarService.openSnackBar(this.responseMessage, GlobalConstants.error);
+    })
   }
 
   handleSubmit() {

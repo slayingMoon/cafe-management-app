@@ -6,6 +6,7 @@ import com.example.cafebackend.jwt.JwtFilter;
 import com.example.cafebackend.jwt.JwtUtil;
 import com.example.cafebackend.jwt.UserPrincipal;
 import com.example.cafebackend.model.binding.user.*;
+import com.example.cafebackend.model.entity.Role;
 import com.example.cafebackend.model.entity.User;
 import com.example.cafebackend.model.mapper.UserMapper;
 import com.example.cafebackend.repository.UserRepository;
@@ -64,6 +65,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private RoleService roleService;
+
     @Override
     public ResponseEntity<String> signUp(RegistrationRequest request) {
         log.info("Inside signup: {}", request);
@@ -93,7 +97,8 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.userDTOtoUserEntity(request);
         user.setPassword(encoder.encode(request.getPassword()));
         user.setIsVerified("false");
-        user.setRole("ROLE_USER");
+        Role role = roleService.findRoleById(2L);
+        user.setRole(role);
         return user;
     }
 
@@ -143,9 +148,9 @@ public class UserServiceImpl implements UserService {
     private UserBindingModel mapUser(User user) {
         UserBindingModel userDTO = userMapper.userEntityToDTO(user);
         userDTO.setStatus(user.getIsVerified());
-        String role = user.getRole().equals("ROLE_ADMIN") ? "Admin" : "User";
-        Long roleId = user.getRole().equals("ROLE_ADMIN") ? 0L : 1L;
-        userDTO.setUserRole(role);
+        String role = user.getRole().getName().equals("ROLE_ADMIN") ? "Admin" : "User";
+        Long roleId = user.getRole().getId();
+        userDTO.setRoleName(role);
         userDTO.setRoleId(roleId);
         return userDTO;
     }
@@ -211,8 +216,8 @@ public class UserServiceImpl implements UserService {
     private List<String> getAdminMails() {
         log.info("Fetching admin mails");
 
-        return em.createQuery("select u.email from User u where u.role=:role", String.class)
-                .setParameter("role", "ROLE_ADMIN")
+        return em.createQuery("select u.email from User u where u.role.id=:roleId", String.class)
+                .setParameter("roleId", 1L)
                 .getResultStream()
                 .collect(Collectors.toList());
     }
@@ -351,9 +356,8 @@ public class UserServiceImpl implements UserService {
                     isChanged=true;
                 }
 
-                String role = userEditModel.getRoleId() == 1L ? "ROLE_USER" : "ROLE_ADMIN";
-                if(!user.getRole().equals(role)) {
-                    user.setRole(role);;
+                if(!user.getRole().getId().equals(userEditModel.getRoleId())) {
+                    user.setRole(roleService.findRoleById(userEditModel.getRoleId()));
                     isChanged=true;
                 }
 

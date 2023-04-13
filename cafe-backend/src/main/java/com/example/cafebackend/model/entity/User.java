@@ -28,6 +28,7 @@ public class User {
     @Column(name = "verified", nullable = false)
     private String isVerified;
 
-    private String role;
+    @ManyToOne(targetEntity = Role.class, optional = false)
+    private Role role;
 
 }

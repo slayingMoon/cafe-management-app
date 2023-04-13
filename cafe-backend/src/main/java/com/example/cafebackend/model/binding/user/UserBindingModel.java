@@ -13,8 +13,8 @@ public class UserBindingModel {
     private String name;
     private String email;
     private String contactNumber;
-    private String userRole;
     private Long roleId;
+    private String roleName;
     private String status;
 
 }

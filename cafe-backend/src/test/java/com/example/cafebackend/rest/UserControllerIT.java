@@ -3,6 +3,7 @@ package com.example.cafebackend.rest;
 import com.example.cafebackend.jwt.JwtFilter;
 import com.example.cafebackend.jwt.JwtUtil;
 import com.example.cafebackend.model.binding.user.*;
+import com.example.cafebackend.model.entity.Role;
 import com.example.cafebackend.model.entity.User;
 import com.example.cafebackend.repository.UserRepository;
 import com.example.cafebackend.service.UserService;
@@ -99,7 +100,10 @@ public class UserControllerIT {
         user.setEmail(TEST_EMAIL);
         user.setContactNumber(TEST_NUMBER);
         user.setIsVerified("false");
-        user.setRole("ROLE_USER");
+        Role role = new Role();
+        role.setId(1L);
+        role.setName("ROLE_USER");
+        user.setRole(role);
         userRepository.save(user);
 
         mockMvc.perform(post(baseUrl + port + "/user/login")
@@ -122,7 +126,10 @@ public class UserControllerIT {
         user.setEmail(TEST_EMAIL);
         user.setContactNumber(TEST_NUMBER);
         user.setIsVerified("true");
-        user.setRole("ROLE_USER");
+        Role role = new Role();
+        role.setId(1L);
+        role.setName("ROLE_USER");
+        user.setRole(role);
         userRepository.save(user);
 
         mockMvc.perform(post(baseUrl + port + "/user/login")
@@ -140,7 +147,10 @@ public class UserControllerIT {
         user1.setName("user1");
         user1.setPassword(new BCryptPasswordEncoder().encode("password1"));
         user1.setEmail("user1@example.com");
-        user1.setRole("ROLE_USER");
+        Role role = new Role();
+        role.setId(1L);
+        role.setName("ROLE_USER");
+        user1.setRole(role);
         user1.setContactNumber("0888222333");
         user1.setIsVerified("false");
         userRepository.save(user1);
@@ -149,7 +159,7 @@ public class UserControllerIT {
         user2.setName("user2");
         user2.setPassword(new BCryptPasswordEncoder().encode("password2"));
         user2.setEmail("user2@example.com");
-        user2.setRole("ROLE_USER");
+        user2.setRole(role);
         user2.setContactNumber("0888222111");
         user2.setIsVerified("false");
         userRepository.save(user2);

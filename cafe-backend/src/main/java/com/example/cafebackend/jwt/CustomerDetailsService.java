@@ -34,7 +34,7 @@ public class CustomerDetailsService implements UserDetailsService {
         return new UserPrincipal(
                 userEntity.getEmail(),
                 userEntity.getPassword(),
-                List.of(mapRole(userEntity.getRole())),
+                List.of(mapRole(userEntity.getRole().getName())),
                 Boolean.parseBoolean(userEntity.getIsVerified())
         );
     }

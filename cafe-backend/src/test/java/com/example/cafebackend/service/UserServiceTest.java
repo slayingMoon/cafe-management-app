@@ -5,6 +5,7 @@ import com.example.cafebackend.jwt.JwtFilter;
 import com.example.cafebackend.jwt.JwtUtil;
 import com.example.cafebackend.jwt.UserPrincipal;
 import com.example.cafebackend.model.binding.user.*;
+import com.example.cafebackend.model.entity.Role;
 import com.example.cafebackend.model.entity.User;
 import com.example.cafebackend.model.mapper.UserMapper;
 import com.example.cafebackend.repository.UserRepository;
@@ -78,7 +79,10 @@ public class UserServiceTest {
         user.setEmail(request.getEmail());
         user.setPassword(encoder.encode(request.getPassword()));
         user.setIsVerified("false");
-        user.setRole("ROLE_USER");
+        Role role = new Role();
+        role.setId(2L);
+        role.setName("ROLE_USER");
+        user.setRole(role);
 
         when(userRepository.findByEmail(request.getEmail())).thenReturn(Optional.empty());
         when(userMapper.userDTOtoUserEntity(request)).thenReturn(user);
@@ -143,7 +147,10 @@ public class UserServiceTest {
         user1.setPassword("hashed-password");
         user1.setContactNumber("0888777666");
         user1.setIsVerified("true");
-        user1.setRole("ROLE_USER");
+        Role role = new Role();
+        role.setId(1L);
+        role.setName("ROLE_USER");
+        user1.setRole(role);
         users.add(user1);
 
         User user2 = new User();
@@ -153,7 +160,7 @@ public class UserServiceTest {
         user2.setPassword("hashed-password");
         user2.setContactNumber("0888777555");
         user2.setIsVerified("false");
-        user1.setRole("ROLE_USER");
+        user1.setRole(role);
         users.add(user2);
 
         TypedQuery<User> query = mock(TypedQuery.class);
