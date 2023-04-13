@@ -72,6 +72,10 @@ export class ManageOrderComponent implements OnInit {
       this.manageOrderForm.controls['total'].setValue(0); //may cause a problem
     }, (error: any) => {
       this.ngxService.stop();
+      this.products = [];
+      this.manageOrderForm.controls['price'].setValue('');
+      this.manageOrderForm.controls['quantity'].setValue('');
+      this.manageOrderForm.controls['total'].setValue(0);
 
       if (error.error?.message) {
         this.responseMessage = error.error?.message;
@@ -124,7 +128,7 @@ export class ManageOrderComponent implements OnInit {
 
   validateSubmit() {
     if (this.totalAmount === 0 || this.manageOrderForm.controls['name'].value === null || this.manageOrderForm.controls['email'].value === null
-      || this.manageOrderForm.controls['contactNumber'] === null || this.manageOrderForm.controls['paymentMethod'] === null
+      || this.manageOrderForm.controls['contactNumber'] === null || this.manageOrderForm.controls['paymentMethod'].value === null
       || !(this.manageOrderForm.controls['contactNumber'].valid) || !(this.manageOrderForm.controls['email'].valid)) {
       return true;
     } else {
@@ -145,7 +149,7 @@ export class ManageOrderComponent implements OnInit {
       this.dataSource = [...this.dataSource];
       this.snackbarService.openSnackBar(GlobalConstants.productAdded, "success");
     } else {
-      this.snackbarService.openSnackBar(GlobalConstants.productExistError, GlobalConstants.error);0
+      this.snackbarService.openSnackBar(GlobalConstants.productAddedError, GlobalConstants.error);
     }
   }
 
