@@ -110,6 +110,9 @@ by the cafe's employees.</p>
 <h2>Interceptors</h2>
 -Added preHandle and postHandle Interceptors, who serve a reporting purpose and log basic data about requests and responses
 
+<h2>Events</h2>
+-Added onRegister Spring Event, which notifies admins by email each time a new user registers.
+
 <hr/>
 
 <h2>Data Management</h2>
