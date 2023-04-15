@@ -1,7 +1,7 @@
 package com.example.cafebackend.service;
 
 import com.example.cafebackend.constants.CafeConstants;
-import com.example.cafebackend.jwt.CustomerDetailsService;
+import com.example.cafebackend.event.UserRegistrationEvent;
 import com.example.cafebackend.jwt.JwtFilter;
 import com.example.cafebackend.jwt.JwtUtil;
 import com.example.cafebackend.jwt.UserPrincipal;
@@ -16,6 +16,7 @@ import com.example.cafebackend.utils.PasswordGenerator;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -47,9 +48,6 @@ public class UserServiceImpl implements UserService {
     private AuthenticationManager authManager;
 
     @Autowired
-    private CustomerDetailsService customerDetailsService;
-
-    @Autowired
     private JwtUtil jwtUtil;
 
     @Autowired
@@ -68,6 +66,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private RoleService roleService;
 
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
     @Override
     public ResponseEntity<String> signUp(RegistrationRequest request) {
         log.info("Inside signup: {}", request);
@@ -78,6 +79,10 @@ public class UserServiceImpl implements UserService {
             if (existsUserByEmail.isEmpty()) {
                 User newUser = constructUser(request);
                 userRepository.save(newUser);
+
+                //instantiate and publish the event
+                UserRegistrationEvent registrationEvent = new UserRegistrationEvent(this, request.getEmail());
+                eventPublisher.publishEvent(registrationEvent);
 
                 return CafeUtils.getResponseEntity("Successful Registration", HttpStatus.CREATED);
             } else {
@@ -169,7 +174,7 @@ public class UserServiceImpl implements UserService {
                     .setIsVerified(userUpdateModel.getStatus());
 
             //NOTIFY ADMINS ABOUT THE UPDATE
-            sendMailToAllAdmins(userUpdateModel.getStatus(), userToUpdate.getEmail(), getAdminMails());
+            sendMailToAllAdmins(userUpdateModel.getStatus(), userToUpdate.getEmail());
 
             return String.format("User %s updated successfully", userToUpdate.getEmail());
         }else {
@@ -178,7 +183,8 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    private void sendMailToAllAdmins(String status, String user, List<String> adminMails) {
+    private void sendMailToAllAdmins(String status, String user) {
+        List<String> adminMails = getAdminMails();
         //we do not want to send the same mail twice to the current user if he is admin
         adminMails.remove(jwtFilter.getCurrentUser());
 
@@ -195,21 +201,35 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void sendMailToAllAdmins(List<User> inactiveUsers, List<String> adminMails) {
-        StringBuilder messageBuilder = new StringBuilder();
-        messageBuilder
-                .append("Following Users are not activated:")
-                .append("\n");
+    private void sendMailToAllAdmins(List<User> inactiveUsers) {
+        if (!inactiveUsers.isEmpty()) {
+            StringBuilder messageBuilder = new StringBuilder();
+            messageBuilder
+                    .append("Following Users are not activated:")
+                    .append("\n");
 
-        inactiveUsers.forEach(u ->
-                messageBuilder
-                        .append("-").append(u.getEmail())
-                        .append("\n")
-        );
+            inactiveUsers.forEach(u ->
+                    messageBuilder
+                            .append("-").append(u.getEmail())
+                            .append("\n")
+            );
+
+            List<String> adminMails = getAdminMails();
+
+            emailUtils
+                    .sendSimpleMessage("INACTIVE USERS REPORT",
+                            messageBuilder.toString(),
+                            adminMails);
+        }
+    }
+
+    private void sendMailToAllAdmins(String userEmail) {
+
+        List<String> adminMails = getAdminMails();
 
         emailUtils
-                .sendSimpleMessage("INACTIVE USERS REPORT",
-                        messageBuilder.toString(),
+                .sendSimpleMessage("USER ACTIVATION",
+                        String.format("Registered user: %s\n Activation required.", userEmail),
                         adminMails);
     }
 
@@ -290,7 +310,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void notifyAdminsAboutInactiveUsers(List<User> inactiveUsers) {
-        sendMailToAllAdmins(inactiveUsers, getAdminMails());
+        sendMailToAllAdmins(inactiveUsers);
+    }
+
+    @Override
+    public void notifyAdminsAboutUserRegistration(String userEmail) {
+        sendMailToAllAdmins(userEmail);
     }
 
     @Override

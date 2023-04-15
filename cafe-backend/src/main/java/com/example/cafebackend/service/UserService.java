@@ -19,6 +19,8 @@ public interface UserService {
 
     void notifyAdminsAboutInactiveUsers(List<User> inactiveUsers);
 
+    void notifyAdminsAboutUserRegistration(String userEmail);
+
     String updateUsername(UsernameUpdateModel usernameUpdateModel);
 
     ResponseEntity<?> getUserByEmail(String email);
