@@ -127,7 +127,7 @@ public class UserControllerIT {
         user.setContactNumber(TEST_NUMBER);
         user.setIsVerified("true");
         Role role = new Role();
-        role.setId(1L);
+        role.setId(2L);
         role.setName("ROLE_USER");
         user.setRole(role);
         userRepository.save(user);
@@ -148,7 +148,7 @@ public class UserControllerIT {
         user1.setPassword(new BCryptPasswordEncoder().encode("password1"));
         user1.setEmail("user1@example.com");
         Role role = new Role();
-        role.setId(1L);
+        role.setId(2L);
         role.setName("ROLE_USER");
         user1.setRole(role);
         user1.setContactNumber("0888222333");

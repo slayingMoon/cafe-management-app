@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -61,6 +62,12 @@ public class UserServiceTest {
 
     @Mock
     private UserMapper userMapper;
+
+    @Mock
+    private RoleService roleService;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -154,27 +161,28 @@ public class UserServiceTest {
         users.add(user1);
 
         User user2 = new User();
-        user1.setId(2L);
-        user1.setEmail("user2@example.com");
+        user2.setId(2L);
+        user2.setEmail("user2@example.com");
         user2.setName("user2");
         user2.setPassword("hashed-password");
         user2.setContactNumber("0888777555");
         user2.setIsVerified("false");
-        user1.setRole(role);
+        user2.setRole(role);
         users.add(user2);
 
-        TypedQuery<User> query = mock(TypedQuery.class);
-        when(query.setParameter(eq("role"), any())).thenReturn(query); // add this line to return a non-null value
-        when(query.getResultStream()).thenReturn(users.stream());
-        when(em.createQuery("select u from User u where u.role=:role", User.class)).thenReturn(query);
-        when(userMapper.userEntityToDTO(any())).thenReturn(new UserBindingModel());
+        when(userRepository.findAll()).thenReturn(users);
+        when(userMapper.userEntityToDTO(any(User.class))).thenAnswer(invocation -> {
+            User user = invocation.getArgument(0);
+            return new UserBindingModel(user.getId(), user.getName(), user.getEmail(), user.getContactNumber(), user.getRole().getId(), user.getRole().getName(), user.getIsVerified());
+        });
 
         // Act
         List<UserBindingModel> result = userService.getAllUsers();
 
         // Assert
         assertEquals(2, result.size());
-        verify(query).getResultStream();
+        assertEquals("user1", result.get(0).getName());
+        assertEquals("user2@example.com", result.get(1).getEmail());
     }
 
 
