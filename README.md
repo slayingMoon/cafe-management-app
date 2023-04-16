@@ -111,7 +111,8 @@ by the cafe's employees.</p>
 -Added preHandle and postHandle Interceptors, who serve a reporting purpose and log basic data about requests and responses
 
 <h2>Events</h2>
--Added onRegister Spring Event, which notifies admins by email each time a new user registers.
+-Added onRegister Spring Event, which notifies admins by email each time a new user registers. <br/>
+-Addedn onApplicationStart Spring Event, which registers a default admin, if there are no admins in the DB
 
 <hr/>
 
