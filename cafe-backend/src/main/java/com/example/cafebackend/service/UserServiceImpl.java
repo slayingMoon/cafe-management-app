@@ -227,18 +227,19 @@ public class UserServiceImpl implements UserService {
 
         List<String> adminMails = getAdminMails();
 
-        emailUtils
-                .sendSimpleMessage("USER ACTIVATION",
-                        String.format("Registered user: %s\n Activation required.", userEmail),
-                        adminMails);
+        if(!adminMails.isEmpty()) {
+            emailUtils
+                    .sendSimpleMessage("USER ACTIVATION",
+                            String.format("Registered user: %s\n Activation required.", userEmail),
+                            adminMails);
+        }
     }
 
     private List<String> getAdminMails() {
         log.info("Fetching admin mails");
 
-        return em.createQuery("select u.email from User u where u.role.id=:roleId", String.class)
-                .setParameter("roleId", 1L)
-                .getResultStream()
+        return userRepository.findAllByRoleId(1L)
+                .stream().map(User::getEmail)
                 .collect(Collectors.toList());
     }
 
