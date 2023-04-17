@@ -171,12 +171,13 @@ public class ProductServiceImpl implements ProductService {
         log.info("Updating product status...");
 
         try {
-            Product product = em.find(Product.class, updateProductStatus.getId());
+            Product product = productRepository.findById(updateProductStatus.getId()).orElse(null);
 
             if (Objects.nonNull(product)) {
 
                 if (!product.getStatus().equals(updateProductStatus.getStatus())) {
                     product.setStatus(updateProductStatus.getStatus());
+                    productRepository.save(product);
 
                     log.info("Product Status Updated Successfully");
                     return CafeUtils.getResponseEntity("Product Status Updated Successfully", HttpStatus.OK);
@@ -199,15 +200,13 @@ public class ProductServiceImpl implements ProductService {
     public ResponseEntity<?> getProductsByCategory(Long categoryId) {
         log.info("Fetching products by category...");
 
-        List<GetProductModel> products = em.createQuery("select p from Product p where p.category.id=:categoryId and p.status=:status", Product.class)
-                .setParameter("categoryId", categoryId)
-                .setParameter("status", "true")
-                .getResultStream()
+        List<GetProductModel> products = productRepository.findAllByCategoryIdAndStatus(categoryId, "true")
+                .stream()
                 .map(this::mapToProductModel)
                 .collect(Collectors.toList());
 
         if (products.isEmpty()) {
-            if (Objects.isNull(em.find(Category.class, categoryId))) {
+            if (Objects.isNull(categoryService.findCategoryById(categoryId.toString()))) {
                 return CafeUtils.getResponseEntity("Category with the given id does not exist.", HttpStatus.BAD_REQUEST);
             }
 
@@ -222,7 +221,7 @@ public class ProductServiceImpl implements ProductService {
         log.info("Fetching products by id...");
 
         try {
-            Product foundProduct = em.find(Product.class, id);
+            Product foundProduct = productRepository.findById(id).orElse(null);
 
             if (Objects.nonNull(foundProduct)) {
                 log.info("Product with id {} found", id);
