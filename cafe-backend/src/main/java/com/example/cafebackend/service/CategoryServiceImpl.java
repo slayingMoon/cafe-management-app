@@ -25,29 +25,21 @@ import java.util.Objects;
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
-    @PersistenceContext
-    private EntityManager em;
-
     @Autowired
     private CategoryRepository categoryRepository;
 
     @Autowired
     private CategoryMapper categoryMapper;
 
-    @Transactional
     @Override
     public ResponseEntity<String> addNewCategory(AddCategoryModel addCategoryModel) {
 
         try {
-            Category category = em.createQuery("select c from Category c", Category.class)
-                    .getResultStream()
-                    .filter(c -> c.getName().equals(addCategoryModel.getName()))
-                    .findAny()
-                    .orElse(null);
+            Category category = categoryRepository.findByName(addCategoryModel.getName()).orElse(null);
 
             if (Objects.isNull(category)) {
                 category = constructCategory(addCategoryModel);
-                em.persist(category);
+                categoryRepository.save(category);
                 return CafeUtils.getResponseEntity("Category added successfully.", HttpStatus.OK);
             }
 
@@ -71,23 +63,21 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.findAll();
     }
 
-    @Transactional
     @Override
     public ResponseEntity<String> updateCategory(UpdateCategoryModel updateCategoryModel) {
 
         try {
-            Category category = em.find(Category.class, updateCategoryModel.getId());
+            Category category = categoryRepository.findById(updateCategoryModel.getId()).orElse(null);
 
             if (Objects.nonNull(category)) {
 
-                Category existingCategory = em.createQuery("select c from Category c", Category.class)
-                        .getResultStream()
-                        .filter(c -> c.getName().equals(updateCategoryModel.getName()))
-                        .findAny()
+                Category existingCategory = categoryRepository
+                        .findByName(updateCategoryModel.getName())
                         .orElse(null);
 
                 if (Objects.isNull(existingCategory)) {
                     category.setName(updateCategoryModel.getName());
+                    categoryRepository.save(category);
                     return CafeUtils.getResponseEntity("Category Updated Successfully.", HttpStatus.OK);
                 }
 
@@ -105,23 +95,20 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category findCategoryById(String categoryId) {
-        return getAllCategories()
-                .stream()
-                .filter(c -> c.getId().equals(Long.parseLong(categoryId)))
-                .findAny()
+        return categoryRepository
+                .findById(Long.parseLong(categoryId))
                 .orElseThrow(() -> new RuntimeException("Category not found"));
     }
 
-    @Transactional
     @Override
     public ResponseEntity<String> deleteCategory(Long id) {
         log.info("Deleting category...");
 
         try {
-            Category category = em.find(Category.class, id);
+            Category category = categoryRepository.findById(id).orElse(null);
 
             if (Objects.nonNull(category)) {
-                em.remove(category);
+                categoryRepository.delete(category);
                 log.info("Category Deleted Successfully");
                 return CafeUtils.getResponseEntity("Category Deleted Successfully", HttpStatus.OK);
             }
