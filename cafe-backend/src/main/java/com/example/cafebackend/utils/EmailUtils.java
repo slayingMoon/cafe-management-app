@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ public class EmailUtils {
     @Autowired
     private PasswordEncoder encoder;
 
+    @Async
     public void sendSimpleMessage(String to, String subject, String text, List<String> list) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("cafemanagement@email.com");
@@ -34,6 +36,7 @@ public class EmailUtils {
         emailSender.send(message);
     }
 
+    @Async
     public void sendSimpleMessage(String subject, String text, List<String> list) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("cafemanagement@email.com");
@@ -57,6 +60,7 @@ public class EmailUtils {
         return cc;
     }
 
+    @Async
     public void forgotMail(String to, String subject, String password) throws MessagingException {
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
